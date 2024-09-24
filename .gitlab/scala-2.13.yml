@@ -1,0 +1,39 @@
+include:
+  - project: 'SwissBorg/infrastructure/gitlab-templates'
+    ref: ${GITLAB_TEMPLATES_VERSION}
+    file:
+      - 'templates/jobs/Scala.yml'
+
+stages:
+  - build
+  - test
+  - publish
+
+## JOBS
+.child-rules:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'parent_pipeline'
+
+compile:
+  stage: build
+  extends:
+    - .child-rules
+    - .sbt-cached-job
+  script:
+    - sbt ++2.13 compile
+
+unit-test:
+  stage: test
+  extends:
+    - .child-rules
+    - .sbt-cached-pull-job
+  script:
+    - sbt ++2.13 test
+
+publish-scala-artifacts:
+  stage: publish
+  extends:
+    - .child-rules
+    - .sbt-publish-job
+  script:
+    - sbt ++2.13 config-service-api/publish config-service-agent/publish

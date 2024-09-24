@@ -1,38 +1,14 @@
 val sjsonnetVersion = "0.4.4"
 
-val scala213 = "2.13.15"
-val scala3 = "3.5.1"
-
-val commonOptions: Seq[String] = Seq(
-  "-opt:l:inline",
-  "-opt-inline-from:sjsonnet.*,sjsonnet.**",
-)
-
 cancelable in Global := true
 publish / skip := true
 
 lazy val main = (project in file("sjsonnet"))
+  .settings(commonSwissBorgCrossCompileSettings)
+  .settings(sbMavenPublishSetting)
+  .settings(sbVersionWithGit)
   .settings(
     name := "sjsonnet",
-
-    // Enable cross-compilation
-    scalaVersion := scala3,
-    crossScalaVersions := Seq(scala213, scala3),
-    scalacOptions ++= {
-      (CrossVersion.partialVersion(scalaVersion.value) match {
-        case Some((3, _)) =>
-          commonOptions ++ Seq(
-            // options dedicated for cross build / migration to Scala 3
-            "-source:3.5-migration"
-          )
-        case _ =>
-          commonOptions ++ Seq(
-            "-Xsource:3"
-          )
-      })
-    },
-
-
     Test / fork := true,
     Test / baseDirectory := (ThisBuild / baseDirectory).value,
     libraryDependencies ++= Seq(
@@ -80,10 +56,9 @@ lazy val main = (project in file("sjsonnet"))
 lazy val bench = (project in file("bench"))
   .dependsOn(main % "compile->test")
   .enablePlugins(JmhPlugin)
+  .settings(commonSwissBorgScala3Settings)
   .settings(
     run / fork := true,
-    // Do not cross-compile the benchmark
-    scalaVersion := scala3,
   )
 
 lazy val root = (project in file("."))

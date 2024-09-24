@@ -1,0 +1,42 @@
+include:
+  - project: 'SwissBorg/infrastructure/gitlab-templates'
+    ref: &PIPELINE_TEMPLATES_REF v3.2.0
+    file: 
+      - 'templates/Workflows/MR-And-Stage-And-Web-Pipelines.yml'
+      - 'templates/jobs/Scala.yml'
+
+stages:
+  - build
+  - test
+  - publish
+  - children
+
+## JOBS
+compile:
+  stage: build
+  extends: .sbt-cached-job
+  script:
+    - sbt compile
+
+unit-test:
+  stage: test
+  extends: .sbt-cached-pull-job
+  script:
+    - sbt test
+
+publish-scala-artifacts:
+  stage: publish
+  extends: .sbt-publish-job
+  script:
+    - sbt sjsonnet/publish
+
+# PARALLEL JOBS
+trigger-scala-2.13-pipeline:
+  stage: children
+  needs: []
+  variables:
+    GITLAB_TEMPLATES_VERSION: *PIPELINE_TEMPLATES_REF
+  trigger:
+    strategy: depend
+    include:
+      - local: .gitlab/scala-2.13.yml
