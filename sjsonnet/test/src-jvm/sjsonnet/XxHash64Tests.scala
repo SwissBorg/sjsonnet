@@ -24,7 +24,7 @@ object XxHash64Tests extends TestSuite {
           memoryLimitBytes = Int.MaxValue,
           cacheThresholdBytes = 0)
         // They should agree
-        val hash = cachedFile.contentHash()
+        val hash = cachedFile.contentHash
         assert(xxHash64Result == hash)
       }
     }

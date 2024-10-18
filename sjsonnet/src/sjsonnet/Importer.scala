@@ -149,7 +149,7 @@ trait ResolvedFile {
   def readString(): String
 
   // Get a content hash of the file suitable for detecting changes in a given file.
-  def contentHash(): String
+  def contentHash: String
 }
 
 case class StaticResolvedFile(content: String) extends ResolvedFile {
@@ -158,7 +158,7 @@ case class StaticResolvedFile(content: String) extends ResolvedFile {
   def readString(): String = content
 
   // We just cheat, the content hash can be the content itself for static imports
-  def contentHash(): String = content
+  def contentHash: String = content
 }
 
 class CachedImporter(parent: Importer) extends Importer {
@@ -184,9 +184,9 @@ class CachedResolver(
   internedStaticFieldSets: mutable.HashMap[Val.StaticObjectFieldSet, java.util.LinkedHashMap[String, java.lang.Boolean]]) extends CachedImporter(parentImporter) {
 
   def parse(path: Path, content: ResolvedFile)(implicit ev: EvalErrorScope): Either[Error, (Expr, FileScope)] = {
-    parseCache.getOrElseUpdate((path, content.contentHash()), {
+    parseCache.getOrElseUpdate((path, content.contentHash), {
       val parser = new Parser(path, strictImportSyntax, internedStrings, internedStaticFieldSets)
-      val parsed = fastparse.parse(content.getParserInput(), parser.document(_)) match {
+      val parsed = fastparse.parse(content.getParserInput(), parser.document(using _)) match {
         case f @ Parsed.Failure(_, _, _) =>
           val traced = f.trace()
           val pos = new Position(new FileScope(path), traced.index)
