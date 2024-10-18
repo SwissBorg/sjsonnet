@@ -473,7 +473,7 @@ object PrettyYamlRenderer{
       yamlPunctuation | (&(CharIn(".0-9\\-")) ~ (yamlTime | yamlDate | yamlNumber) | yamlKeyword) ~ End
     )
 
-    fastparse.parse(str, parser(_)).isSuccess ||
+    fastparse.parse(str, parser).isSuccess ||
     str.contains(": ") || // Looks like a key-value pair
     str.contains(" #") || // Comments
     str.charAt(str.length - 1) == ':' || // Looks like a key-value pair

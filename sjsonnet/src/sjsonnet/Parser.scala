@@ -159,10 +159,10 @@ class Parser(val currentFile: Path,
     P( "(" ~/ params ~ ")" ~ expr ).map(t => Expr.Function(pos, t._1, t._2))
 
   def ifElse[A: P](pos: Position): P[Expr] =
-    P( Pos ~~ expr ~ "then" ~~ break ~ expr ~ ("else" ~~ break ~ expr).?.map(_.orNull) ).map((Expr.IfElse.apply _).tupled)
+    P( Pos ~~ expr ~ "then" ~~ break ~ expr ~ ("else" ~~ break ~ expr).?.map(_.orNull) ).map((Expr.IfElse.apply).tupled)
 
   def localExpr[A: P]: P[Expr] =
-    P( Pos ~~ bind.rep(min=1, sep = ","./).map(s => if(s.isEmpty) null else s.toArray) ~ ";" ~ expr ).map((Expr.LocalExpr.apply _).tupled)
+    P( Pos ~~ bind.rep(min=1, sep = ","./).map(s => if(s.isEmpty) null else s.toArray) ~ ";" ~ expr ).map((Expr.LocalExpr.apply).tupled)
 
   def expr[A: P]: P[Expr] =
     P("" ~ expr1 ~ (Pos ~~ binaryop ~/ expr1).rep ~ "").map{ case (pre, fs) =>
@@ -377,18 +377,18 @@ class Parser(val currentFile: Path,
   def objlocal[A: P] = P( "local" ~~ break ~/ bind )
   def compspec[A: P]: P[Seq[Expr.CompSpec]] = P( (forspec | ifspec).rep )
   def forspec[A: P] =
-    P( Pos ~~ "for" ~~ break ~/ id ~ "in" ~~ break ~ expr ).map((Expr.ForSpec.apply _).tupled)
-  def ifspec[A: P] = P( Pos ~~ "if" ~~ break  ~/ expr ).map((Expr.IfSpec.apply _).tupled)
+    P( Pos ~~ "for" ~~ break ~/ id ~ "in" ~~ break ~ expr ).map((Expr.ForSpec.apply).tupled)
+  def ifspec[A: P] = P( Pos ~~ "if" ~~ break  ~/ expr ).map((Expr.IfSpec.apply).tupled)
   def fieldname[A: P] = P(
     id.map(Expr.FieldName.Fixed.apply) |
     string.map(Expr.FieldName.Fixed.apply) |
     "[" ~ expr.map(Expr.FieldName.Dyn.apply) ~ "]"
   )
   def assertStmt[A: P] =
-    P( expr ~ (":" ~ expr).?.map(_.orNull) ).map((Expr.Member.AssertStmt.apply _).tupled)
+    P( expr ~ (":" ~ expr).?.map(_.orNull) ).map((Expr.Member.AssertStmt.apply).tupled)
 
   def bind[A: P] =
-    P( Pos ~~ id ~ ("(" ~/ params.? ~ ")").?.map(_.flatten).map(_.orNull) ~ "=" ~ expr ).map((Expr.Bind.apply _).tupled)
+    P( Pos ~~ id ~ ("(" ~/ params.? ~ ")").?.map(_.flatten).map(_.orNull) ~ "=" ~ expr ).map((Expr.Bind.apply).tupled)
 
   def args[A: P] = P( ((id ~ "=" ~ !"=").? ~ expr).rep(sep = ",") ~ ",".? ).flatMapX{ x =>
     if (x.sliding(2).exists{case Seq(l, r) => l._1.isDefined && r._1.isEmpty case _ => false}) {

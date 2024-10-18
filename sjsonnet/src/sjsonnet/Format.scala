@@ -81,7 +81,7 @@ object Format{
              values0: Val,
              pos: Position)
             (implicit evaluator: EvalScope): String = {
-    val (leading, chunks) = fastparse.parse(s, format(_)).get.value
+    val (leading, chunks) = fastparse.parse(s, format).get.value
     format(leading, chunks, values0, pos)
   }
 
@@ -257,7 +257,7 @@ object Format{
   }
 
   class PartialApplyFmt(fmt: String) extends Val.Builtin1("values") {
-    val (leading, chunks) = fastparse.parse(fmt, format(_)).get.value
+    val (leading, chunks) = fastparse.parse(fmt, format).get.value
     def evalRhs(values0: Val, ev: EvalScope, pos: Position): Val =
       Val.Str(pos, format(leading, chunks, values0, pos)(ev))
   }

@@ -113,7 +113,7 @@ object SjsonnetMain {
   def writeFile(config: Config, f: os.Path, contents: String): Either[String, Unit] =
     handleWriteFile(os.write.over(f, contents, createFolders = config.createDirs.value))
 
-  def writeToFile(config: Config, wd: os.Path)(materialize: Writer => Either[String, _]): Either[String, String] = {
+  def writeToFile(config: Config, wd: os.Path)(materialize: Writer => Either[String, ?]): Either[String, String] = {
     config.outputFile match{
       case None =>
         val sw = new StringWriter

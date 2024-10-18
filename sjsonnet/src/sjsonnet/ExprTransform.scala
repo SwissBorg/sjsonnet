@@ -189,7 +189,7 @@ abstract class ExprTransform {
   }
 
   protected def transformArr[T <: Expr](a: Array[T]): Array[T] =
-    transformGenericArr(a)((transform _).asInstanceOf[T => T])
+    transformGenericArr(a)((transform).asInstanceOf[T => T])
 
   protected def transformParams(p: Params): Params = {
     if(p == null) return null
