@@ -36,4 +36,4 @@ publish-scala-artifacts:
     - .child-rules
     - .sbt-publish-job
   script:
-    - sbt ++2.13 config-service-api/publish config-service-agent/publish
+    - sbt ++2.13 sjsonnet:publish

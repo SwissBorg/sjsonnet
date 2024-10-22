@@ -28,7 +28,7 @@ publish-scala-artifacts:
   stage: publish
   extends: .sbt-publish-job
   script:
-    - sbt sjsonnet/publish
+    - sbt sjsonnet:publish
 
 # PARALLEL JOBS
 trigger-scala-2.13-pipeline:
